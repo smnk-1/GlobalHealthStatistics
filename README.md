@@ -37,6 +37,4 @@
 - **Urbanization Rate (%)**: Процент населения, проживающего в городских районах.
 
 ## Результаты обработки данных
-<div style="text-align: center;">
-  <img src="images/pie_chart.png" alt="Описание" width="300">
-</div>
+![Круговая диаграмма по странам](images/pie_chart.png)
