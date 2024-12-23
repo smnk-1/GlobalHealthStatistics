@@ -53,9 +53,14 @@ categorical_columns = ['Country', 'Disease Name', 'Disease Category',
 df_encoded = pd.get_dummies(df_processed, columns=categorical_columns, drop_first=True)
 
 # Тепловая карта корреляции
-plt.figure(figsize=(50, 50))
+plt.figure(figsize=(15, 15))
 corr_matrix = df_encoded.corr()
-sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f')
+selected_features = ['Prevalence Rate (%)', 'Incidence Rate (%)',
+                     'Mortality Rate (%)', 'Doctors per 1000',
+                     'Hospital Beds per 1000', 'Recovery Rate (%)']
+
+filtered_corr_matrix = corr_matrix.loc[selected_features, selected_features]
+sns.heatmap(filtered_corr_matrix, annot=True, cmap='coolwarm', fmt='.2f')
 plt.title('Тепловая карта корреляции')
 plt.savefig('images/heatmap.png')
 plt.close()
