@@ -27,7 +27,7 @@ plt.hist(df_processed['Doctors per 1000'], bins=10, color='blue', alpha=0.7)
 plt.title('Гистограмма распределения Doctors per 1000')
 plt.xlabel('Значения')
 plt.ylabel('Частота')
-plt.savefig('histogram.png')
+plt.savefig('images/histogram.png')
 plt.close()
 
 # Диаграмма "ящик с усами"
@@ -35,7 +35,7 @@ plt.figure(figsize=(8, 6))
 sns.boxplot(data=df_processed, x='Year', color='orange')
 plt.title('Диаграмма "ящик с усами" для Year')
 plt.xlabel('Year')
-plt.savefig('boxplot.png')
+plt.savefig('images/boxplot.png')
 plt.close()
 
 # Круговая диаграмма
@@ -43,7 +43,7 @@ plt.figure(figsize=(8, 8))
 category_counts = df_processed['Country'].value_counts()
 plt.pie(category_counts, labels=category_counts.index, autopct='%1.1f%%', colors=['cyan', 'magenta'])
 plt.title('Круговая диаграмма для Country')
-plt.savefig('pie_chart.png')
+plt.savefig('images/pie_chart.png')
 plt.close()
 
 # One-hot кодирование всех категориальных признаков
@@ -57,7 +57,7 @@ plt.figure(figsize=(50, 50))
 corr_matrix = df_encoded.corr()
 sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f')
 plt.title('Тепловая карта корреляции')
-plt.savefig('heatmap.png')
+plt.savefig('images/heatmap.png')
 plt.close()
 
 # Диаграмма countplot с группировкой по двум номинативным признакам
@@ -66,11 +66,11 @@ sns.countplot(data=df_processed, x='Disease Category', hue='Gender', palette='vi
 plt.title('Диаграмма countplot для Disease Category и Gender')
 plt.xlabel('Disease Category')
 plt.ylabel('Количество')
-plt.savefig('countplot.png')
+plt.savefig('images/countplot.png')
 plt.close()
 
 # Срез данных (первые 200 значений)
-subset = df_encoded['Prevalence Rate (%)'].dropna().head(200)  # Удаляем пропуски, если они есть
+subset = df_encoded['Prevalence Rate (%)'].dropna().head(200)
 
 # Проверка на нормальность
 stat, p_value = normaltest(subset)
@@ -88,7 +88,27 @@ plt.hist(subset, bins=20, alpha=0.7, color='blue', edgecolor='black')
 plt.title(f'Histogram of Prevalence Rate (%)')
 plt.xlabel('Prevalence Rate (%)')
 plt.ylabel("Frequency")
-plt.savefig('Histogram of Prevalence Rate (%)')
+plt.savefig('images/Histogram of Prevalence Rate (%)')
+
+# Заполнение пропусков
+for column in df_encoded.columns:
+    if df_encoded[column].isnull().any():
+        if df_encoded[column].dtype == 'int64':
+            median_value = df_encoded[column].median()
+            df_encoded[column].fillna(median_value, inplace=True)
+            print(f"Пропуски в столбце '{column}' заполнены медианой: {median_value}")
+        elif df_encoded[column].dtype == 'float64':
+            mean_value = df_encoded[column].mean()
+            df_encoded[column].fillna(mean_value, inplace=True)
+            print(f"Пропуски в столбце '{column}' заполнены средним: {mean_value}")
+        else:
+            mode_value = df_encoded[column].mode()[0]
+            df_encoded[column].fillna(mode_value, inplace=True)
+            print(f"Пропуски в столбце '{column}' заполнены модой: {mode_value}")
 
 
-print("Все графики построены и сохранены как PNG-файлы.")
+print("\nПроверка пропусков после заполнения:")
+print(df_encoded.isnull().sum().sum())
+
+# Сохранение предобработанного
+df_encoded.head(1000).to_csv('processed_data.csv', index=False)
